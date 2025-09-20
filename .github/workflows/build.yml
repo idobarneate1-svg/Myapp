@@ -1,41 +1,35 @@
+mkdir -p .github/workflows
+cat > .github/workflows/build.yml << 'EOF'
 name: Build and Deploy Pegasus Hunter
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
-      
-    - name: Set up Python 3.9
+
+    - name: Set up Python
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
-        
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flask werkzeug
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        
-    - name: Create application files
-      run: |
-        echo "יוצר את קבצי האפליקציה..."
-        
-    - name: Test application
-      run: |
-        python -c "import pegasus_hunter; print('✓ האפליקציה עברה בדיקת ייבוא')"
-        
-    - name: Build success message
-      run: |
-        echo "✅ בניית האפליקציה הושלמה בהצלחה!"
-        echo "📁 קבצים שנוצרו:"
-        ls -la
-        echo "🚀 האפליקציה מוכנה להפצה"
+
+    - name: Test application import
+      working-directory: ./app
+      run: python -c "import pegasus_hunter; print('✓ האפליקציה עברה בדיקת ייבוא')"
+
+    - name: Success message
+      run: echo "✅ בניית האפליקציה הושלמה בהצלחה!"
+EOF
