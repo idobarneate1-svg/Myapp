@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pegasus Hunter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #bb86fc;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #bb86fc;
+            margin-top: 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #03dac6;
+            color: black;
+        }
+        .btn-secondary {
+            background-color: #bb86fc;
+            color: black;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #333333;
+            border-radius: 8px;
+            min-height: 30px;
+            text-align: right;
+        }
+        .file-input {
+            display: none;
+        }
+        .blue-btn {
+            background-color: #4285F4;
+            color: white;
+        }
+        .green-btn {
+            background-color: #0F9D58;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pegasus Hunter</h1>
+        <p>סורק קבצי מערכת וגישה לקבצים</p>
+        
+        <button id="scanSystemBtn" class="btn btn-primary">סורק קבצי מערכת</button>
+        <button id="uploadBtn" class="btn btn-secondary">העלה קובץ מהמכשיר</button>
+        <input type="file" id="fileInput" class="file-input">
+        <button id="viewFilesBtn" class="btn btn-primary">צפה בקבצים שהועלו</button>
+    </div>
+
+    <div class="container">
+        <h2>קבצי מערכת</h2>
+        <div class="status" id="status">טרם בוצעה סריקה...</div>
+    </div>
+
+    <div class="container">
+        <h2>סריקה מתיקיות מערכת</h2>
+        <div>
+            <button id="systemBtn" class="btn blue-btn">System</button>
+            <button id="vendorBtn" class="btn blue-btn">Vendor</button>
+            <button id="dataBtn" class="btn blue-btn">Data</button>
+            <button id="productBtn" class="btn blue-btn">Product</button>
+        </div>
+        <div style="margin-top: 20px;">
+            <button id="systemBtnGreen" class="btn green-btn">System</button>
+            <button id="vendorBtnGreen" class="btn green-btn">Vendor</button>
+            <button id="dataBtnGreen" class="btn green-btn">Data</button>
+            <button id="productBtnGreen" class="btn green-btn">Product</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusElement = document.getElementById('status');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fileInput');
+            const scanSystemBtn = document.getElementById('scanSystemBtn');
+            const viewFilesBtn = document.getElementById('viewFilesBtn');
+            
+            const systemBtn = document.getElementById('systemBtn');
+            const vendorBtn = document.getElementById('vendorBtn');
+            const dataBtn = document.getElementById('dataBtn');
+            const productBtn = document.getElementById('productBtn');
+            
+            const systemBtnGreen = document.getElementById('systemBtnGreen');
+            const vendorBtnGreen = document.getElementById('vendorBtnGreen');
+            const dataBtnGreen = document.getElementById('dataBtnGreen');
+            const productBtnGreen = document.getElementById('productBtnGreen');
+
+            uploadBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function(e) {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    uploadFile(file);
+                }
+            });
+
+            scanSystemBtn.addEventListener('click', function() {
+                fetch('/scan_system', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.status);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בסריקת המערכת');
+                });
+            });
+
+            viewFilesBtn.addEventListener('click', function() {
+                fetch('/list_uploads')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.files && data.files.length > 0) {
+                        const filesList = data.files.join('\n');
+                        updateStatus('קבצים שהועלו:\n' + filesList);
+                    } else {
+                        updateStatus('אין קבצים שהועלו עדיין');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בטעינת הקבצים');
+                });
+            });
+            
+            systemBtn.addEventListener('click', function() {
+                scanPath('/scan_system');
+            });
+            
+            vendorBtn.addEventListener('click', function() {
+                scanPath('/scan_vendor');
+            });
+            
+            dataBtn.addEventListener('click', function() {
+                scanPath('/scan_data');
+            });
+            
+            productBtn.addEventListener('click', function() {
+                scanPath('/scan_product');
+            });
+            
+            systemBtnGreen.addEventListener('click', function() {
+                scanPath('/scan_system');
+            });
+            
+            vendorBtnGreen.addEventListener('click', function() {
+                scanPath('/scan_vendor');
+            });
+            
+            dataBtnGreen.addEventListener('click', function() {
+                scanPath('/scan_data');
+            });
+            
+            productBtnGreen.addEventListener('click', function() {
+                scanPath('/scan_product');
+            });
+
+            function scanPath(endpoint) {
+                fetch(endpoint, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.status + ' בנתיב: ' + data.path);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בסריקת הנתיב');
+                });
+            }
+
+            function uploadFile(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                updateStatus('מעלה את הקובץ: ' + file.name);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateStatus(data.success + ': ' + data.filename);
+                    } else {
+                        updateStatus('שגיאה: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בהעלאת הקובץ');
+                });
+            }
+
+            function updateStatus(message) {
+                statusElement.textContent = message;
+            }
+        });
+    </script>
+</body>
+</html>
