@@ -68,6 +68,46 @@
             background-color: #0F9D58;
             color: white;
         }
+        .media-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .media-item {
+            max-width: 150px;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+        }
+        .media-item img {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 4px;
+        }
+        .media-item video {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 4px;
+        }
+        .media-item .filename {
+            font-size: 12px;
+            margin-top: 5px;
+            word-break: break-all;
+            color: #aaa;
+        }
+        .file-list {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .file-list-item {
+            padding: 5px;
+            background-color: #444;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -84,6 +124,7 @@
     <div class="container">
         <h2>קבצי מערכת</h2>
         <div class="status" id="status">טרם בוצעה סריקה...</div>
+        <div id="mediaGallery" class="media-gallery"></div>
     </div>
 
     <div class="container">
@@ -149,9 +190,49 @@
                 fetch('/list_uploads')
                 .then(response => response.json())
                 .then(data => {
+                    const galleryElement = document.getElementById('mediaGallery');
+                    galleryElement.innerHTML = '';
+                    
                     if (data.files && data.files.length > 0) {
-                        const filesList = data.files.join('\n');
-                        updateStatus('קבצים שהועלו:\n' + filesList);
+                        let imageCount = 0;
+                        let videoCount = 0;
+                        let otherCount = 0;
+                        
+                        data.files.forEach(file => {
+                            const item = document.createElement('div');
+                            item.className = 'media-item';
+                            
+                            if (file.type === 'image') {
+                                imageCount++;
+                                const img = document.createElement('img');
+                                img.src = file.url;
+                                img.alt = file.name;
+                                item.appendChild(img);
+                            } else if (file.type === 'video') {
+                                videoCount++;
+                                const video = document.createElement('video');
+                                video.controls = true;
+                                const source = document.createElement('source');
+                                source.src = file.url;
+                                video.appendChild(source);
+                                item.appendChild(video);
+                            } else {
+                                otherCount++;
+                                const icon = document.createElement('div');
+                                icon.style.fontSize = '40px';
+                                icon.textContent = '📄';
+                                item.appendChild(icon);
+                            }
+                            
+                            const filename = document.createElement('div');
+                            filename.className = 'filename';
+                            filename.textContent = file.name;
+                            item.appendChild(filename);
+                            
+                            galleryElement.appendChild(item);
+                        });
+                        
+                        updateStatus(`נמצאו ${data.files.length} קבצים: ${imageCount} תמונות, ${videoCount} סרטונים, ${otherCount} אחרים`);
                     } else {
                         updateStatus('אין קבצים שהועלו עדיין');
                     }

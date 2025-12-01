@@ -7,11 +7,25 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploaded_files'
 app.config['ALLOWED_EXTENSIONS'] = {'*'}  # קבל כל סוג של קובץ
 
+# סוגי קבצים נתמכים לתמונות וסרטונים
+IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'}
+VIDEO_EXTENSIONS = {'mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'}
+
 # וודא שתיקיית ההעלאות קיימת
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 def allowed_file(filename):
     return True  # מאפשר כל סוג קובץ
+
+def get_file_type(filename):
+    """מזהה את סוג הקובץ (תמונה, סרטון או אחר)"""
+    if '.' in filename:
+        ext = filename.rsplit('.', 1)[1].lower()
+        if ext in IMAGE_EXTENSIONS:
+            return 'image'
+        elif ext in VIDEO_EXTENSIONS:
+            return 'video'
+    return 'other'
 
 @app.route('/')
 def index():
@@ -41,8 +55,20 @@ def uploaded_file(filename):
 
 @app.route('/list_uploads')
 def list_uploads():
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    return jsonify({'files': files})
+    upload_folder = app.config['UPLOAD_FOLDER']
+    if not os.path.exists(upload_folder):
+        return jsonify({'files': []})
+    
+    files = os.listdir(upload_folder)
+    files_with_types = []
+    for f in files:
+        file_type = get_file_type(f)
+        files_with_types.append({
+            'name': f,
+            'type': file_type,
+            'url': url_for('uploaded_file', filename=f)
+        })
+    return jsonify({'files': files_with_types})
 
 @app.route('/scan_system', methods=['POST'])
 def scan_system():
