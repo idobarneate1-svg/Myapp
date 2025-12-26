@@ -68,9 +68,9 @@ def get_fund_pricing():
     API endpoint to retrieve fund pricing data for chart visualization.
     
     Query Parameters:
-        fundId (int): The fund identifier
-        fromDate (str): Start date in format YYYY-MM-DD
-        unitCategoryCode (str): Unit category code (e.g., 'A', 'B', etc.)
+        fundId (int): The fund identifier (required)
+        fromDate (str): Start date in format YYYY-MM-DD (required)
+        unitCategoryCode (str): Unit category code (e.g., 'A', 'B', etc.) (optional)
     
     Returns:
         JSON response with pricing data suitable for charting
@@ -100,7 +100,11 @@ def get_fund_pricing():
     base_price = 100.0 + (fund_id % 50)  # Different base price per fund
     
     # Generate data points from start date to today
+    # Limit to prevent excessive data generation (max 2 years)
     end_date = datetime.now()
+    max_end_date = start_date + timedelta(days=730)  # 2 years maximum
+    if end_date > max_end_date:
+        end_date = max_end_date
     while current_date <= end_date:
         # Simulate price fluctuation
         day_offset = (current_date - start_date).days
