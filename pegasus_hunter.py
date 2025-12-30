@@ -61,5 +61,14 @@ def scan_data():
 def scan_product():
     return jsonify({'status': 'סריקת תיקיית product החלה', 'path': '/product'})
 
+@app.route('/liverpool_coach', methods=['GET'])
+def liverpool_coach():
+    # מחזיר מידע על מאמן ליברפול
+    return jsonify({
+        'question': 'מי מאמן את ליברפול?',
+        'answer': 'ארנה סלוט',
+        'details': 'ארנה סלוט הוא המאמן הנוכחי של ליברפול מאז 2024'
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

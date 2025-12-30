@@ -102,6 +102,11 @@
         </div>
     </div>
 
+    <div class="container">
+        <h2>מידע ספורט</h2>
+        <button id="liverpoolCoachBtn" class="btn btn-primary">מי מאמן את ליברפול?</button>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusElement = document.getElementById('status');
@@ -119,6 +124,8 @@
             const vendorBtnGreen = document.getElementById('vendorBtnGreen');
             const dataBtnGreen = document.getElementById('dataBtnGreen');
             const productBtnGreen = document.getElementById('productBtnGreen');
+            
+            const liverpoolCoachBtn = document.getElementById('liverpoolCoachBtn');
 
             uploadBtn.addEventListener('click', function() {
                 fileInput.click();
@@ -192,6 +199,18 @@
             
             productBtnGreen.addEventListener('click', function() {
                 scanPath('/scan_product');
+            });
+            
+            liverpoolCoachBtn.addEventListener('click', function() {
+                fetch('/liverpool_coach')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.question + '\n' + 'תשובה: ' + data.answer + '\n' + data.details);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בשליפת המידע');
+                });
             });
 
             function scanPath(endpoint) {
