@@ -206,8 +206,7 @@
                 fetch('/argentina_coach')
                 .then(response => response.json())
                 .then(data => {
-                    const message = `מאמן ${data.team}: ${data.coach}\nמכהן מאז: ${data.since}`;
-                    coachInfoElement.textContent = message;
+                    coachInfoElement.innerHTML = `מאמן ${data.team}: ${data.coach}<br>מכהן מאז: ${data.since}`;
                 })
                 .catch(error => {
                     console.error('Error:', error);
