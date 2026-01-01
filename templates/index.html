@@ -79,6 +79,7 @@
         <button id="uploadBtn" class="btn btn-secondary">העלה קובץ מהמכשיר</button>
         <input type="file" id="fileInput" class="file-input">
         <button id="viewFilesBtn" class="btn btn-primary">צפה בקבצים שהועלו</button>
+        <button id="brazilCoachBtn" class="btn btn-secondary">מי מאמן נבחרת ברזיל?</button>
     </div>
 
     <div class="container">
@@ -109,6 +110,7 @@
             const fileInput = document.getElementById('fileInput');
             const scanSystemBtn = document.getElementById('scanSystemBtn');
             const viewFilesBtn = document.getElementById('viewFilesBtn');
+            const brazilCoachBtn = document.getElementById('brazilCoachBtn');
             
             const systemBtn = document.getElementById('systemBtn');
             const vendorBtn = document.getElementById('vendorBtn');
@@ -159,6 +161,18 @@
                 .catch(error => {
                     console.error('Error:', error);
                     updateStatus('שגיאה בטעינת הקבצים');
+                });
+            });
+
+            brazilCoachBtn.addEventListener('click', function() {
+                fetch('/brazil_coach')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus(data.info);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בטעינת המידע');
                 });
             });
             

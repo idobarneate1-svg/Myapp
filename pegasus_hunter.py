@@ -61,5 +61,14 @@ def scan_data():
 def scan_product():
     return jsonify({'status': 'סריקת תיקיית product החלה', 'path': '/product'})
 
+@app.route('/brazil_coach', methods=['GET'])
+def brazil_coach():
+    # מחזיר מידע על מאמן נבחרת ברזיל הנוכחי
+    return jsonify({
+        'coach': 'דורבל ז\'וניור',
+        'team': 'נבחרת ברזיל',
+        'info': 'המאמן הנוכחי של נבחרת ברזיל הוא דורבל ז\'וניור (Dorival Júnior), שמונה לתפקיד ביוני 2024.'
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
