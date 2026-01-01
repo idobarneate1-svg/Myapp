@@ -79,6 +79,7 @@
         <button id="uploadBtn" class="btn btn-secondary">העלה קובץ מהמכשיר</button>
         <input type="file" id="fileInput" class="file-input">
         <button id="viewFilesBtn" class="btn btn-primary">צפה בקבצים שהועלו</button>
+        <button id="coachBtn" class="btn btn-secondary">מי מאמן את נבחרת ישראל?</button>
     </div>
 
     <div class="container">
@@ -109,6 +110,7 @@
             const fileInput = document.getElementById('fileInput');
             const scanSystemBtn = document.getElementById('scanSystemBtn');
             const viewFilesBtn = document.getElementById('viewFilesBtn');
+            const coachBtn = document.getElementById('coachBtn');
             
             const systemBtn = document.getElementById('systemBtn');
             const vendorBtn = document.getElementById('vendorBtn');
@@ -159,6 +161,18 @@
                 .catch(error => {
                     console.error('Error:', error);
                     updateStatus('שגיאה בטעינת הקבצים');
+                });
+            });
+
+            coachBtn.addEventListener('click', function() {
+                fetch('/israel_coach')
+                .then(response => response.json())
+                .then(data => {
+                    updateStatus('מאמן ' + data.team + ': ' + data.coach);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateStatus('שגיאה בקבלת מידע על המאמן');
                 });
             });
             
