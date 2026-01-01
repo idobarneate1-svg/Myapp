@@ -61,5 +61,13 @@ def scan_data():
 def scan_product():
     return jsonify({'status': 'סריקת תיקיית product החלה', 'path': '/product'})
 
+@app.route('/argentina_coach')
+def argentina_coach():
+    return jsonify({
+        'coach': 'ליונל סקלוני',
+        'team': 'נבחרת ארגנטינה',
+        'since': '2018'
+    })
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)

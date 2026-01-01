@@ -102,6 +102,12 @@
         </div>
     </div>
 
+    <div class="container">
+        <h2>מי מאמן את נבחרת ארגנטינה?</h2>
+        <button id="argentinaCoachBtn" class="btn btn-primary">הצג מאמן נבחרת ארגנטינה</button>
+        <div class="status" id="coachInfo">לחץ על הכפתור לצפייה במידע</div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusElement = document.getElementById('status');
@@ -109,6 +115,8 @@
             const fileInput = document.getElementById('fileInput');
             const scanSystemBtn = document.getElementById('scanSystemBtn');
             const viewFilesBtn = document.getElementById('viewFilesBtn');
+            const argentinaCoachBtn = document.getElementById('argentinaCoachBtn');
+            const coachInfoElement = document.getElementById('coachInfo');
             
             const systemBtn = document.getElementById('systemBtn');
             const vendorBtn = document.getElementById('vendorBtn');
@@ -192,6 +200,19 @@
             
             productBtnGreen.addEventListener('click', function() {
                 scanPath('/scan_product');
+            });
+
+            argentinaCoachBtn.addEventListener('click', function() {
+                fetch('/argentina_coach')
+                .then(response => response.json())
+                .then(data => {
+                    const message = `מאמן ${data.team}: ${data.coach}\nמכהן מאז: ${data.since}`;
+                    coachInfoElement.textContent = message;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    coachInfoElement.textContent = 'שגיאה בטעינת המידע';
+                });
             });
 
             function scanPath(endpoint) {
